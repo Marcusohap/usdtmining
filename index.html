@@ -2,93 +2,147 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rich App Clone</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>USDT Mining App</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f8f8f8; }
+    .header, .footer {
+      background: #fff; padding: 15px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .content { padding: 15px; }
+    .section {
+      background: #fff; border-radius: 10px; padding: 20px;
+      margin-bottom: 15px; box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    }
+    .button {
+      padding: 10px 20px; border: none;
+      border-radius: 5px; cursor: pointer;
+    }
+    .primary { background-color: #00c853; color: white; }
+    .secondary { background-color: #eeeeee; }
+    .store-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+    }
+    .store-item {
+      border: 1px solid #ddd; border-radius: 10px;
+      padding: 10px; background: #fff; text-align: center;
+    }
+    .bottom-nav {
+      position: fixed; bottom: 0; width: 100%; background: #fff;
+      display: flex; justify-content: space-around; padding: 10px 0;
+      box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
+    }
+    .nav-item { text-align: center; font-size: 14px; color: #555; }
+    .invite-btns button { margin: 5px; }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
-  <!-- Header -->
-  <header class="flex justify-between items-center p-4 bg-white shadow">
-    <div class="flex items-center space-x-2">
-      <span class="text-xl font-bold">Rich App</span>
-      <span class="text-blue-500">✔️</span>
+<body>
+  <div class="header">
+    <strong>USDT Mining</strong>
+    <div>USDT: <strong id="usdtBalance">0.00</strong></div>
+  </div>
+
+  <div class="content">
+    <div class="section">
+      <h2>Madencilik</h2>
+      <p>Hashrate: <strong id="hashrate">3 GH/s</strong></p>
+      <p>Toplam Kazanç: <strong id="totalEarned">0.0000 USDT</strong></p>
+      <button class="button primary" onclick="collectReward()">Ödül Al</button>
+      <button class="button secondary" onclick="activateBooster()">Booster</button>
     </div>
-    <div class="flex space-x-4">
-      <div class="flex items-center space-x-1">
-        <img src="https://cryptologos.cc/logos/richcoin-rhc-logo.png" class="w-5 h-5" alt="RHC"/>
-        <span>9.300</span>
-      </div>
-      <div class="flex items-center space-x-1">
-        <img src="https://cryptologos.cc/logos/dogecoin-doge-logo.png" class="w-5 h-5" alt="DOGE"/>
-        <span>825.43</span>
+
+    <div class="section">
+      <h3>Arkadaşlarını Davet Et</h3>
+      <p>Her davet edilen arkadaş için +1000 puan</p>
+      <div class="invite-btns">
+        <a href="https://t.me/UsdtToMiningBot" target="_blank"><button class="button secondary">Telegram</button></a>
+        <button class="button secondary" onclick="share('WhatsApp')">WhatsApp</button>
+        <button class="button secondary" onclick="share('Messenger')">Messenger</button>
+        <button class="button secondary" onclick="share('Line')">Line</button>
       </div>
     </div>
-  </header>
 
-  <!-- Main Section -->
-  <main class="p-4">
-    <section class="bg-white rounded-xl p-4 shadow-md mb-4 text-center">
-      <img src="https://i.imgur.com/lPfGndz.png" alt="Fan" class="w-40 mx-auto mb-2" />
-      <div class="text-2xl font-bold">0.790430501 DOGE</div>
-      <div class="text-sm text-gray-500">Hashrate: 3 GH/s ⚡</div>
-      <div class="mt-4 space-x-4">
-        <button class="px-4 py-2 bg-gray-200 rounded">Ödül al</button>
-        <button class="px-4 py-2 bg-black text-white rounded">Booster</button>
-      </div>
-    </section>
+    <div class="section">
+      <h3>Cüzdan</h3>
+      <p>USDT Bakiye: <strong id="walletBalance">0.00</strong> ≈ $<span id="walletUSD">0.00</span></p>
+      <button class="button primary" onclick="withdraw()">Çekim Yap</button>
+    </div>
 
-    <!-- Invite Friends -->
-    <section class="bg-white rounded-xl p-4 shadow-md mb-4">
-      <h2 class="font-semibold mb-2">Arkadaşları davet et</h2>
-      <p>Her davet edilen arkadaş için +1000 $RHC</p>
-      <div class="flex space-x-2 mt-2">
-        <button class="bg-blue-500 text-white px-3 py-1 rounded">Telegram</button>
-        <button class="bg-green-500 text-white px-3 py-1 rounded">WhatsApp</button>
-        <button class="bg-purple-500 text-white px-3 py-1 rounded">Messenger</button>
-        <button class="bg-gray-700 text-white px-3 py-1 rounded">Line</button>
+    <div class="section">
+      <h3>Mağaza</h3>
+      <div class="store-grid">
+        <div class="store-item">10,000 puan - 1 TON</div>
+        <div class="store-item">55,000 puan - 5 TON</div>
+        <div class="store-item">130,000 puan - 10 TON</div>
+        <div class="store-item">390,000 puan - 25 TON</div>
+        <div class="store-item">750,000 puan - 40 TON</div>
+        <div class="store-item">1,600,000 puan - 100 TON</div>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- Wallet Info -->
-    <section class="bg-white rounded-xl p-4 shadow-md mb-4">
-      <h2 class="font-semibold mb-2">Cüzdan Bakiyesi</h2>
-      <div class="flex justify-between mb-2">
-        <span>$RHC: 300</span>
-        <a href="#" class="text-blue-500 text-sm">$RHC nedir?</a>
-      </div>
-      <div class="flex justify-between mb-4">
-        <span>DOGE: 826.33 ≈ $155.62</span>
-        <button class="bg-black text-white px-3 py-1 rounded">Çekim Yap</button>
-      </div>
-      <div>
-        <button class="w-full bg-gray-200 py-2 rounded">Cüzdan Adresini Ayarla</button>
-      </div>
-    </section>
+  <div class="bottom-nav">
+    <div class="nav-item">Anasayfa</div>
+    <div class="nav-item">Arkadaşlar</div>
+    <div class="nav-item">Cüzdan</div>
+  </div>
 
-    <!-- Market -->
-    <section class="bg-white rounded-xl p-4 shadow-md">
-      <h2 class="font-semibold mb-4">Mağaza</h2>
-      <div class="grid grid-cols-2 gap-4">
-        <div class="border rounded p-2 text-center">
-          <div class="text-red-500 text-sm">% OFF</div>
-          <div class="text-xl font-bold">10,000 RHC</div>
-          <div>1 TON</div>
-        </div>
-        <div class="border rounded p-2 text-center">
-          <div class="text-red-500 text-sm">10% OFF</div>
-          <div class="text-xl font-bold">55,000 RHC</div>
-          <div>5 TON</div>
-        </div>
-        <!-- Daha fazla kart eklenebilir -->
-      </div>
-    </section>
-  </main>
+  <script>
+    // Verileri yükle veya başlat
+    let hashrate = parseInt(localStorage.getItem("hashrate")) || 3;
+    let usdtBalance = parseFloat(localStorage.getItem("usdtBalance")) || 0;
+    let totalEarned = parseFloat(localStorage.getItem("totalEarned")) || 0;
 
-  <!-- Footer -->
-  <footer class="fixed bottom-0 w-full bg-white border-t p-2 flex justify-around text-sm">
-    <button>Anasayfa</button>
-    <button>Arkadaşlar</button>
-    <button>Cüzdan</button>
-  </footer>
+    function calculateUsdtPerSecond() {
+      return (11 / 86400) * (hashrate / 3); // 24 saatte 11 USDT kazancı
+    }
+
+    let usdtPerSecond = calculateUsdtPerSecond();
+
+    function updateUI() {
+      document.getElementById('hashrate').textContent = `${hashrate} GH/s`;
+      document.getElementById('usdtBalance').textContent = usdtBalance.toFixed(4);
+      document.getElementById('totalEarned').textContent = `${totalEarned.toFixed(4)} USDT`;
+      document.getElementById('walletBalance').textContent = usdtBalance.toFixed(2);
+      document.getElementById('walletUSD').textContent = usdtBalance.toFixed(2);
+    }
+
+    function collectReward() {
+      alert(`Kazanç başarıyla cüzdana aktarıldı: ${usdtBalance.toFixed(4)} USDT`);
+    }
+
+    function activateBooster() {
+      hashrate += 3;
+      usdtPerSecond = calculateUsdtPerSecond();
+      alert("Booster aktif! Hashrate +3 GH/s. Günlük kazanç +33 USDT.");
+      saveData();
+      updateUI();
+    }
+
+    function withdraw() {
+      alert("Çekim işlemi başlatıldı!");
+    }
+
+    function share(platform) {
+      alert(platform + " üzerinden paylaşıldı!");
+    }
+
+    function saveData() {
+      localStorage.setItem("hashrate", hashrate);
+      localStorage.setItem("usdtBalance", usdtBalance);
+      localStorage.setItem("totalEarned", totalEarned);
+    }
+
+    setInterval(() => {
+      usdtBalance += usdtPerSecond;
+      totalEarned += usdtPerSecond;
+      saveData();
+      updateUI();
+    }, 1000);
+
+    updateUI();
+  </script>
 </body>
 </html>
