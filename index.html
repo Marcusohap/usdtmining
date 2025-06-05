@@ -1,86 +1,134 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { RocketIcon, WalletIcon, UsersIcon } from "lucide-react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>USDT Mining App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2rem;
+    }
 
-export default function USDTMiningApp() {
-  const [usdtBalance, setUsdtBalance] = useState(825.43);
-  const [hashrate, setHashrate] = useState(3);
-  const [minedUsdt, setMinedUsdt] = useState(0.790430501);
-  const [wallet, setWallet] = useState({ usdt: 826.33, rhc: 300 });
+    h1 {
+      color: #00e676;
+      font-size: 2rem;
+    }
 
-  const handleClaimReward = () => {
-    setWallet(prev => ({ ...prev, usdt: prev.usdt + minedUsdt }));
-    setMinedUsdt(0);
-  };
+    .balance {
+      font-size: 1.5rem;
+      margin: 1rem 0;
+    }
 
-  const handleBooster = () => {
-    setHashrate(prev => prev + 1);
-  };
+    .button {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      margin: 0.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #00e676;
+      color: #000;
+      transition: 0.3s;
+    }
 
-  const handleWithdraw = () => {
-    alert("Çekim işlemi başlatıldı!");
-  };
+    .button:hover {
+      background-color: #1de9b6;
+    }
 
-  return (
-    <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-4 text-center">USDT Mining</h1>
-      <Tabs defaultValue="home">
-        <TabsList className="grid grid-cols-3 mb-4">
-          <TabsTrigger value="home">
-            <RocketIcon className="h-4 w-4 mr-1" /> Anasayfa
-          </TabsTrigger>
-          <TabsTrigger value="friends">
-            <UsersIcon className="h-4 w-4 mr-1" /> Arkadaşlar
-          </TabsTrigger>
-          <TabsTrigger value="wallet">
-            <WalletIcon className="h-4 w-4 mr-1" /> Cüzdan
-          </TabsTrigger>
-        </TabsList>
+    .section {
+      margin-top: 2rem;
+    }
 
-        <TabsContent value="home">
-          <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-lg">Hashrate: {hashrate} GH/s ⚡</div>
-              <div className="text-2xl font-bold my-2">{minedUsdt.toFixed(9)} USDT</div>
-              <Button onClick={handleClaimReward} className="mr-2">Ödül Al</Button>
-              <Button variant="outline" onClick={handleBooster}>Booster</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
+    .wallet-info {
+      margin-top: 1.5rem;
+      background: #111;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #00e676;
+    }
 
-        <TabsContent value="friends">
-          <Card>
-            <CardContent className="p-4">
-              <p>Arkadaşlarını davet et</p>
-              <p>Her davet edilen arkadaş için +1000 USDT</p>
-              <div className="grid grid-cols-3 gap-2 mt-2">
-                <Button variant="outline">Telegram</Button>
-                <Button variant="outline">WhatsApp</Button>
-                <Button variant="outline">Link Kopyala</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+    .notification {
+      background-color: #1de9b6;
+      color: #000;
+      margin-top: 1rem;
+      padding: 1rem;
+      display: none;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>USDT Mining</h1>
+  <div class="balance">Bakiye: <span id="usdt">825.43000</span> USDT</div>
+  <div>Hashrate: <span id="hashrate">3</span></div>
+  <div>Kazımda Bekleyen: <span id="mined">0.00000</span> USDT</div>
 
-        <TabsContent value="wallet">
-          <Card>
-            <CardContent className="p-4">
-              <div className="mb-2">Cüzdan Bakiyesi</div>
-              <div className="text-sm mb-2">USDT: {wallet.usdt} ≈ ${(wallet.usdt * 0.1884).toFixed(2)}</div>
-              <div className="text-sm mb-4">Bonus: {wallet.rhc} USDT</div>
-              <Button onClick={handleWithdraw}>Çekim Yap</Button>
-              <div className="mt-4">
-                <label className="block text-sm mb-1">Cüzdan Adresi Ayarla</label>
-                <Input placeholder="USDT Cüzdan Adresi" />
-              </div>
-              <div className="mt-4 text-sm text-gray-500">Çekim Kaydı: Kayıt yok</div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
-}
+  <div class="section">
+    <button class="button" onclick="startMining()">⛏ Başla</button>
+    <button class="button" onclick="claim()">🎁 Claim</button>
+    <button class="button" onclick="withdraw()">💸 Çekim Talebi</button>
+  </div>
+
+  <div class="wallet-info">
+    <h3>USDT Cüzdan Bilgisi</h3>
+    <p><strong>Adres:</strong> TDCJDChfTyXY4qegtE6J9PBbhj6rwT5Qrj</p>
+    <p><strong>Minimum çekim:</strong> 800 USDT</p>
+  </div>
+
+  <div class="notification" id="notification"></div>
+
+  <script>
+    let usdt = 825.43;
+    let mined = 0;
+    let mining = false;
+
+    function startMining() {
+      if (mining) return;
+      mining = true;
+      setInterval(() => {
+        mined += 0.000150;
+        document.getElementById("mined").textContent = mined.toFixed(5);
+      }, 1000);
+    }
+
+    function claim() {
+      usdt += mined;
+      mined = 0;
+      updateUI();
+      showNotification("Kazanç bakiyeye aktarıldı.");
+    }
+
+    function withdraw() {
+      if (usdt >= 800) {
+        showNotification(`Çekim talebi alındı. Miktar: ${usdt.toFixed(5)} USDT`);
+        usdt = 0;
+        updateUI();
+      } else {
+        showNotification("Minimum çekim limiti 800 USDT'dir.");
+      }
+    }
+
+    function updateUI() {
+      document.getElementById("usdt").textContent = usdt.toFixed(5);
+      document.getElementById("mined").textContent = mined.toFixed(5);
+      if (window.Telegram.WebApp) {
+        Telegram.WebApp.sendData(JSON.stringify({ usdt, mined }));
+      }
+    }
+
+    function showNotification(msg) {
+      const box = document.getElementById("notification");
+      box.textContent = msg;
+      box.style.display = "block";
+      setTimeout(() => box.style.display = "none", 4000);
+    }
+
+    Telegram.WebApp.ready();
+  </script>
+</body>
+</html>
