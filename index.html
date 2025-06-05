@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>USDT MİNİNG ÖDEME EKRANI</title>
+  <title>TL ÇEKİM EKRANI</title>
   <style>
     body {
       margin: 0;
@@ -37,24 +37,6 @@
       margin-bottom: 4px;
     }
 
-    .row {
-      display: flex;
-      justify-content: space-between;
-      background-color: #333;
-      padding: 10px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-
-    .btn {
-      background-color: #16a34a;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-
     input {
       width: 100%;
       padding: 10px;
@@ -71,7 +53,7 @@
     }
 
     .warning {
-      color: #f87171;
+      color: #fbbf24;
       font-weight: bold;
       font-size: 0.95rem;
       margin-bottom: 15px;
@@ -98,56 +80,29 @@
 </head>
 <body>
   <div class="container">
-    <h1>USDT MİNİNG ÖDEME EKRANI</h1>
-
-    <div class="card">
-      <label>IBAN</label>
-      <div class="row">
-        <span id="iban">TR230010300000000014365322</span>
-        <button class="btn" onclick="copyText('iban')">Kopyala</button>
-      </div>
-
-      <label>IBAN Adı</label>
-      <div class="row">
-        <span id="ibanName">Moka United Ödeme ve Elektronik Para Kuruluşu A.Ş.</span>
-        <button class="btn" onclick="copyText('ibanName')">Kopyala</button>
-      </div>
-
-      <label>Açıklama</label>
-      <div class="row">
-        <span id="desc">73915374874</span>
-        <button class="btn" onclick="copyText('desc')">Kopyala</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <p><strong>Yatırım Seçenekleri:</strong></p>
-      <ul style="font-size: 0.9rem; line-height: 1.6;">
-        <li>1 işlemci - 125 TL - Günlük gelir: 28 USDT</li>
-        <li>2 işlemci - 275 TL - Günlük gelir: 50 USDT</li>
-        <li>3 işlemci - 600 TL - Günlük gelir: 90 USDT</li>
-        <li>4 işlemci - 680 TL - Günlük gelir: 140 USDT</li>
-        <li>5 işlemci - 1000 TL - Günlük gelir: 170 USDT</li>
-        <li>6 işlemci - 1300 TL - Günlük gelir: 199 USDT</li>
-      </ul>
-    </div>
+    <h1>TL ÇEKİM EKRANI</h1>
 
     <div class="card" id="formCard">
-      <p class="warning">⚠️ Eğer isim ve soyisminizi tam girmezseniz paranız kaybolur. USDT MİNİNG sorumlu değildir.</p>
+      <div class="warning">
+        ⚠️ Lütfen IBAN ve ad-soyad bilgilerinizi eksiksiz giriniz. Aksi takdirde ödeme yapılmaz ve TL Mining sorumlu tutulamaz.
+      </div>
 
-      <label>Yatırdığınız Tutar (TL)</label>
-      <input type="number" id="amount" />
+      <label>Çekmek İstediğiniz Tutar (TL)</label>
+      <input type="number" id="withdrawAmount" placeholder="Minimum 30000 TL" />
 
       <label>Adınız Soyadınız</label>
-      <input type="text" id="fullname" />
+      <input type="text" id="fullname" placeholder="Ad Soyad" />
+
+      <label>IBAN Numaranız</label>
+      <input type="text" id="iban" placeholder="TR ile başlayacak şekilde giriniz" />
 
       <div id="error" class="error"></div>
 
-      <button class="full-btn" onclick="submitForm()">Ödeme Yaptım</button>
+      <button class="full-btn" onclick="submitWithdrawal()">Çekim Talebi Gönder</button>
     </div>
 
     <div class="card" id="successCard" style="display: none;">
-      <p class="success">✅ Ödeme talebiniz alındı</p>
+      <p class="success">✅ Çekim talebiniz alınmıştır.</p>
       <a href="https://t.me/UsdtToMiningBot">
         <button class="full-btn">Bota Geri Dön</button>
       </a>
@@ -155,27 +110,28 @@
   </div>
 
   <script>
-    function copyText(id) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text);
-    }
-
-    function submitForm() {
-      const validAmounts = [125, 275, 600, 680, 1000, 1300];
-      const amount = parseInt(document.getElementById("amount").value);
+    function submitWithdrawal() {
+      const amount = parseInt(document.getElementById("withdrawAmount").value);
       const fullname = document.getElementById("fullname").value.trim();
+      const iban = document.getElementById("iban").value.trim().toUpperCase();
       const errorDiv = document.getElementById("error");
 
-      if (!validAmounts.includes(amount)) {
-        errorDiv.innerText = "Yanlış tutar girdiniz tekrar deneyin.";
+      if (isNaN(amount) || amount < 30000) {
+        errorDiv.innerText = "Minimum çekim tutarı 30.000 TL'dir.";
         return;
       }
 
       if (fullname === "") {
-        errorDiv.innerText = "Ad ve Soyad gerekli.";
+        errorDiv.innerText = "Ad Soyad boş bırakılamaz.";
         return;
       }
 
+      if (!iban.startsWith("TR") || iban.length < 20) {
+        errorDiv.innerText = "Geçerli bir IBAN giriniz (TR ile başlamalı ve en az 20 karakter olmalı).";
+        return;
+      }
+
+      // Başarılı
       errorDiv.innerText = "";
       document.getElementById("formCard").style.display = "none";
       document.getElementById("successCard").style.display = "block";
