@@ -1,141 +1,176 @@
-// ✅ pages/index.tsx
-import { useEffect, useState } from 'react';
-import Head from 'next/head';
-
-const validAmounts = [125, 275, 600, 680, 1000, 1300];
-
-export default function Home() {
-  const [amount, setAmount] = useState('');
-  const [name, setName] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState('');
-  const tg = typeof window !== 'undefined' ? (window as any).Telegram?.WebApp : null;
-
-  useEffect(() => {
-    if (tg) {
-      tg.ready();
-      tg.expand();
-    }
-  }, [tg]);
-
-  const handleCopy = async (text: string) => {
-    await navigator.clipboard.writeText(text);
-  };
-
-  const handleSubmit = () => {
-    const amt = parseInt(amount);
-    if (!validAmounts.includes(amt)) {
-      setError('Yanlış tutar girdiniz, tekrar deneyin.');
-      return;
-    }
-    if (!name.trim()) {
-      setError('Ad ve Soyad gerekli.');
-      return;
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>USDT MİNİNG ÖDEME EKRANI</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #000;
+      color: white;
+      padding: 20px;
     }
 
-    setError('');
-    setSubmitted(true);
-  };
+    .container {
+      max-width: 500px;
+      margin: auto;
+    }
 
-  return (
-    <>
-      <Head>
-        <title>USDT Mining Ödeme</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      </Head>
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
 
-      <div className="min-h-screen bg-black text-white p-4 flex flex-col items-center">
-        <h1 className="text-2xl font-bold mb-4">USDT MİNİNG ÖDEME EKRANI</h1>
+    .card {
+      background-color: #1f1f1f;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
 
-        <div className="bg-gray-900 p-4 rounded-2xl w-full max-w-md space-y-4 shadow-lg">
-          {/* IBAN */}
-          <div>
-            <label className="block text-sm">IBAN</label>
-            <div className="flex justify-between bg-gray-800 p-2 rounded-xl">
-              <span className="break-all">TR230010300000000014365322</span>
-              <button
-                onClick={() => handleCopy('TR230010300000000014365322')}
-                className="bg-green-600 px-2 py-1 rounded text-white"
-              >Kopyala</button>
-            </div>
-          </div>
+    label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
 
-          {/* IBAN Adı */}
-          <div>
-            <label className="block text-sm">IBAN Adı</label>
-            <div className="flex justify-between bg-gray-800 p-2 rounded-xl">
-              <span className="break-words">Moka United Ödeme ve Elektronik Para Kuruluşu A.Ş.</span>
-              <button
-                onClick={() => handleCopy('Moka United Ödeme ve Elektronik Para Kuruluşu A.Ş.')}
-                className="bg-green-600 px-2 py-1 rounded text-white"
-              >Kopyala</button>
-            </div>
-          </div>
+    .row {
+      display: flex;
+      justify-content: space-between;
+      background-color: #333;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
 
-          {/* Açıklama */}
-          <div>
-            <label className="block text-sm">Açıklama</label>
-            <div className="flex justify-between bg-gray-800 p-2 rounded-xl">
-              <span>73915374874</span>
-              <button
-                onClick={() => handleCopy('73915374874')}
-                className="bg-green-600 px-2 py-1 rounded text-white"
-              >Kopyala</button>
-            </div>
-          </div>
+    .btn {
+      background-color: #16a34a;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
 
-          {/* İşlemci Seçenekleri */}
-          <div className="bg-gray-800 p-4 rounded-xl">
-            <p className="font-semibold mb-2">Yatırım Seçenekleri:</p>
-            <ul className="list-disc list-inside space-y-1 text-sm">
-              <li>1 işlemci - 125 TL - Günlük gelir: 28 USDT</li>
-              <li>2 işlemci - 275 TL - Günlük gelir: 50 USDT</li>
-              <li>3 işlemci - 600 TL - Günlük gelir: 90 USDT</li>
-              <li>4 işlemci - 680 TL - Günlük gelir: 140 USDT</li>
-              <li>5 işlemci - 1000 TL - Günlük gelir: 170 USDT</li>
-              <li>6 işlemci - 1300 TL - Günlük gelir: 199 USDT</li>
-            </ul>
-          </div>
+    input {
+      width: 100%;
+      padding: 10px;
+      background-color: #444;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
 
-          {/* Form */}
-          {!submitted ? (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm">Yatırdığınız Tutar (TL)</label>
-                <input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-gray-700 text-white border border-gray-600"
-                />
-              </div>
-              <div>
-                <label className="block text-sm">Adınız Soyadınız</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-gray-700 text-white border border-gray-600"
-                />
-              </div>
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-              <button onClick={handleSubmit} className="w-full bg-green-600 text-white p-2 rounded-xl">
-                Ödeme Yaptım
-              </button>
-            </div>
-          ) : (
-            <div className="text-center space-y-4">
-              <p className="text-green-400 font-semibold">✅ Ödeme talebiniz alındı</p>
-              <a
-                href="https://t.me/UsdtToMiningBot"
-                className="inline-block w-full bg-green-600 text-white p-2 rounded-xl text-center"
-              >
-                Bota Geri Dön
-              </a>
-            </div>
-          )}
-        </div>
+    .error {
+      color: #f87171;
+      margin-bottom: 10px;
+    }
+
+    .success {
+      text-align: center;
+      color: #4ade80;
+      margin-bottom: 20px;
+    }
+
+    .full-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #16a34a;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>USDT MİNİNG ÖDEME EKRANI</h1>
+
+    <div class="card">
+      <label>IBAN</label>
+      <div class="row">
+        <span id="iban">TR230010300000000014365322</span>
+        <button class="btn" onclick="copyText('iban')">Kopyala</button>
       </div>
-    </>
-  );
-}
+
+      <label>IBAN Adı</label>
+      <div class="row">
+        <span id="ibanName">Moka United Ödeme ve Elektronik Para Kuruluşu A.Ş.</span>
+        <button class="btn" onclick="copyText('ibanName')">Kopyala</button>
+      </div>
+
+      <label>Açıklama</label>
+      <div class="row">
+        <span id="desc">73915374874</span>
+        <button class="btn" onclick="copyText('desc')">Kopyala</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p><strong>Yatırım Seçenekleri:</strong></p>
+      <ul style="font-size: 0.9rem; line-height: 1.6;">
+        <li>1 işlemci - 125 TL - Günlük gelir: 28 USDT</li>
+        <li>2 işlemci - 275 TL - Günlük gelir: 50 USDT</li>
+        <li>3 işlemci - 600 TL - Günlük gelir: 90 USDT</li>
+        <li>4 işlemci - 680 TL - Günlük gelir: 140 USDT</li>
+        <li>5 işlemci - 1000 TL - Günlük gelir: 170 USDT</li>
+        <li>6 işlemci - 1300 TL - Günlük gelir: 199 USDT</li>
+      </ul>
+    </div>
+
+    <div class="card" id="formCard">
+      <label>Yatırdığınız Tutar (TL)</label>
+      <input type="number" id="amount" />
+
+      <label>Adınız Soyadınız</label>
+      <input type="text" id="fullname" />
+
+      <div id="error" class="error"></div>
+
+      <button class="full-btn" onclick="submitForm()">Ödeme Yaptım</button>
+    </div>
+
+    <div class="card" id="successCard" style="display: none;">
+      <p class="success">✅ Ödeme talebiniz alındı</p>
+      <a href="https://t.me/UsdtToMiningBot">
+        <button class="full-btn">Bota Geri Dön</button>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function copyText(id) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text);
+    }
+
+    function submitForm() {
+      const validAmounts = [125, 275, 600, 680, 1000, 1300];
+      const amount = parseInt(document.getElementById("amount").value);
+      const fullname = document.getElementById("fullname").value.trim();
+      const errorDiv = document.getElementById("error");
+
+      if (!validAmounts.includes(amount)) {
+        errorDiv.innerText = "Yanlış tutar girdiniz tekrar deneyin.";
+        return;
+      }
+
+      if (fullname === "") {
+        errorDiv.innerText = "Ad ve Soyad gerekli.";
+        return;
+      }
+
+      errorDiv.innerText = "";
+      document.getElementById("formCard").style.display = "none";
+      document.getElementById("successCard").style.display = "block";
+    }
+  </script>
+</body>
+</html>
