@@ -1,134 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>USDT Mining App</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      background: #000;
-      color: #fff;
-      font-family: sans-serif;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    h1 {
-      color: #00e676;
-      font-size: 2rem;
-    }
-
-    .balance {
-      font-size: 1.5rem;
-      margin: 1rem 0;
-    }
-
-    .button {
-      padding: 1rem 2rem;
-      font-size: 1rem;
-      margin: 0.5rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background-color: #00e676;
-      color: #000;
-      transition: 0.3s;
-    }
-
-    .button:hover {
-      background-color: #1de9b6;
-    }
-
-    .section {
-      margin-top: 2rem;
-    }
-
-    .wallet-info {
-      margin-top: 1.5rem;
-      background: #111;
-      padding: 1rem;
-      border-radius: 8px;
-      border: 1px solid #00e676;
-    }
-
-    .notification {
-      background-color: #1de9b6;
-      color: #000;
-      margin-top: 1rem;
-      padding: 1rem;
-      display: none;
-      border-radius: 8px;
-    }
-  </style>
+  <title>Rich App Clone</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-  <h1>USDT Mining</h1>
-  <div class="balance">Bakiye: <span id="usdt">825.43000</span> USDT</div>
-  <div>Hashrate: <span id="hashrate">3</span></div>
-  <div>Kazımda Bekleyen: <span id="mined">0.00000</span> USDT</div>
+<body class="bg-gray-100 text-gray-900">
+  <!-- Header -->
+  <header class="flex justify-between items-center p-4 bg-white shadow">
+    <div class="flex items-center space-x-2">
+      <span class="text-xl font-bold">Rich App</span>
+      <span class="text-blue-500">✔️</span>
+    </div>
+    <div class="flex space-x-4">
+      <div class="flex items-center space-x-1">
+        <img src="https://cryptologos.cc/logos/richcoin-rhc-logo.png" class="w-5 h-5" alt="RHC"/>
+        <span>9.300</span>
+      </div>
+      <div class="flex items-center space-x-1">
+        <img src="https://cryptologos.cc/logos/dogecoin-doge-logo.png" class="w-5 h-5" alt="DOGE"/>
+        <span>825.43</span>
+      </div>
+    </div>
+  </header>
 
-  <div class="section">
-    <button class="button" onclick="startMining()">⛏ Başla</button>
-    <button class="button" onclick="claim()">🎁 Claim</button>
-    <button class="button" onclick="withdraw()">💸 Çekim Talebi</button>
-  </div>
+  <!-- Main Section -->
+  <main class="p-4">
+    <section class="bg-white rounded-xl p-4 shadow-md mb-4 text-center">
+      <img src="https://i.imgur.com/lPfGndz.png" alt="Fan" class="w-40 mx-auto mb-2" />
+      <div class="text-2xl font-bold">0.790430501 DOGE</div>
+      <div class="text-sm text-gray-500">Hashrate: 3 GH/s ⚡</div>
+      <div class="mt-4 space-x-4">
+        <button class="px-4 py-2 bg-gray-200 rounded">Ödül al</button>
+        <button class="px-4 py-2 bg-black text-white rounded">Booster</button>
+      </div>
+    </section>
 
-  <div class="wallet-info">
-    <h3>USDT Cüzdan Bilgisi</h3>
-    <p><strong>Adres:</strong> TDCJDChfTyXY4qegtE6J9PBbhj6rwT5Qrj</p>
-    <p><strong>Minimum çekim:</strong> 800 USDT</p>
-  </div>
+    <!-- Invite Friends -->
+    <section class="bg-white rounded-xl p-4 shadow-md mb-4">
+      <h2 class="font-semibold mb-2">Arkadaşları davet et</h2>
+      <p>Her davet edilen arkadaş için +1000 $RHC</p>
+      <div class="flex space-x-2 mt-2">
+        <button class="bg-blue-500 text-white px-3 py-1 rounded">Telegram</button>
+        <button class="bg-green-500 text-white px-3 py-1 rounded">WhatsApp</button>
+        <button class="bg-purple-500 text-white px-3 py-1 rounded">Messenger</button>
+        <button class="bg-gray-700 text-white px-3 py-1 rounded">Line</button>
+      </div>
+    </section>
 
-  <div class="notification" id="notification"></div>
+    <!-- Wallet Info -->
+    <section class="bg-white rounded-xl p-4 shadow-md mb-4">
+      <h2 class="font-semibold mb-2">Cüzdan Bakiyesi</h2>
+      <div class="flex justify-between mb-2">
+        <span>$RHC: 300</span>
+        <a href="#" class="text-blue-500 text-sm">$RHC nedir?</a>
+      </div>
+      <div class="flex justify-between mb-4">
+        <span>DOGE: 826.33 ≈ $155.62</span>
+        <button class="bg-black text-white px-3 py-1 rounded">Çekim Yap</button>
+      </div>
+      <div>
+        <button class="w-full bg-gray-200 py-2 rounded">Cüzdan Adresini Ayarla</button>
+      </div>
+    </section>
 
-  <script>
-    let usdt = 825.43;
-    let mined = 0;
-    let mining = false;
+    <!-- Market -->
+    <section class="bg-white rounded-xl p-4 shadow-md">
+      <h2 class="font-semibold mb-4">Mağaza</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="border rounded p-2 text-center">
+          <div class="text-red-500 text-sm">% OFF</div>
+          <div class="text-xl font-bold">10,000 RHC</div>
+          <div>1 TON</div>
+        </div>
+        <div class="border rounded p-2 text-center">
+          <div class="text-red-500 text-sm">10% OFF</div>
+          <div class="text-xl font-bold">55,000 RHC</div>
+          <div>5 TON</div>
+        </div>
+        <!-- Daha fazla kart eklenebilir -->
+      </div>
+    </section>
+  </main>
 
-    function startMining() {
-      if (mining) return;
-      mining = true;
-      setInterval(() => {
-        mined += 0.000150;
-        document.getElementById("mined").textContent = mined.toFixed(5);
-      }, 1000);
-    }
-
-    function claim() {
-      usdt += mined;
-      mined = 0;
-      updateUI();
-      showNotification("Kazanç bakiyeye aktarıldı.");
-    }
-
-    function withdraw() {
-      if (usdt >= 800) {
-        showNotification(`Çekim talebi alındı. Miktar: ${usdt.toFixed(5)} USDT`);
-        usdt = 0;
-        updateUI();
-      } else {
-        showNotification("Minimum çekim limiti 800 USDT'dir.");
-      }
-    }
-
-    function updateUI() {
-      document.getElementById("usdt").textContent = usdt.toFixed(5);
-      document.getElementById("mined").textContent = mined.toFixed(5);
-      if (window.Telegram.WebApp) {
-        Telegram.WebApp.sendData(JSON.stringify({ usdt, mined }));
-      }
-    }
-
-    function showNotification(msg) {
-      const box = document.getElementById("notification");
-      box.textContent = msg;
-      box.style.display = "block";
-      setTimeout(() => box.style.display = "none", 4000);
-    }
-
-    Telegram.WebApp.ready();
-  </script>
+  <!-- Footer -->
+  <footer class="fixed bottom-0 w-full bg-white border-t p-2 flex justify-around text-sm">
+    <button>Anasayfa</button>
+    <button>Arkadaşlar</button>
+    <button>Cüzdan</button>
+  </footer>
 </body>
 </html>
