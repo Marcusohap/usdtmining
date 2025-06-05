@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+// ✅ pages/index.tsx
+import { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { CheckCircle } from 'lucide-react';
 
 const validAmounts = [125, 275, 600, 680, 1000, 1300];
 
@@ -9,107 +9,133 @@ export default function Home() {
   const [name, setName] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const tg = typeof window !== 'undefined' ? (window as any).Telegram?.WebApp : null;
 
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
+  useEffect(() => {
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+  }, [tg]);
+
+  const handleCopy = async (text: string) => {
+    await navigator.clipboard.writeText(text);
   };
 
   const handleSubmit = () => {
-    const numAmount = parseInt(amount);
-    if (!numAmount || !validAmounts.includes(numAmount)) {
+    const amt = parseInt(amount);
+    if (!validAmounts.includes(amt)) {
       setError('Yanlış tutar girdiniz, tekrar deneyin.');
       return;
     }
     if (!name.trim()) {
-      setError('Ad ve soyad zorunludur.');
+      setError('Ad ve Soyad gerekli.');
       return;
     }
+
     setError('');
     setSubmitted(true);
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 flex flex-col items-center">
+    <>
       <Head>
         <title>USDT Mining Ödeme</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
 
-      <h1 className="text-2xl font-bold mb-6">USDT MİNİNG ÖDEME EKRANI</h1>
+      <div className="min-h-screen bg-black text-white p-4 flex flex-col items-center">
+        <h1 className="text-2xl font-bold mb-4">USDT MİNİNG ÖDEME EKRANI</h1>
 
-      <div className="bg-gray-900 rounded-2xl p-4 w-full max-w-md space-y-4 shadow-xl">
-        <div>
-          <label className="block text-sm">IBAN</label>
-          <div className="flex items-center justify-between bg-gray-800 p-2 rounded-xl">
-            <span className="break-all">TR230010300000000014365322</span>
-            <button onClick={() => handleCopy('TR230010300000000014365322')} className="bg-green-600 px-2 py-1 rounded text-white">Kopyala</button>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm">IBAN Adı</label>
-          <div className="flex items-center justify-between bg-gray-800 p-2 rounded-xl">
-            <span className="break-words">Moka United Ödeme ve Elektronik Para Kuruluşu A.Ş.</span>
-            <button onClick={() => handleCopy('Moka United Ödeme ve Elektronik Para Kuruluşu A.Ş.')} className="bg-green-600 px-2 py-1 rounded text-white">Kopyala</button>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm">Açıklama Kısmına Yazılacak</label>
-          <div className="flex items-center justify-between bg-gray-800 p-2 rounded-xl">
-            <span>73915374874</span>
-            <button onClick={() => handleCopy('73915374874')} className="bg-green-600 px-2 py-1 rounded text-white">Kopyala</button>
-          </div>
-        </div>
-
-        <div className="bg-gray-800 p-4 rounded-xl">
-          <p className="font-semibold mb-2">Yatırım Seçenekleri:</p>
-          <ul className="list-disc list-inside space-y-1 text-sm">
-            <li>1 işlemci - 125 TL - Günlük gelir: 28 USDT</li>
-            <li>2 işlemci - 275 TL - Günlük gelir: 50 USDT</li>
-            <li>3 işlemci - 600 TL - Günlük gelir: 90 USDT</li>
-            <li>4 işlemci - 680 TL - Günlük gelir: 140 USDT</li>
-            <li>5 işlemci - 1000 TL - Günlük gelir: 170 USDT</li>
-            <li>6 işlemci - 1300 TL - Günlük gelir: 199 USDT</li>
-          </ul>
-        </div>
-
-        {!submitted ? (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm">Yatırdığınız Tutar (TL)</label>
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="w-full p-2 rounded-xl bg-gray-700 text-white border border-gray-600"
-              />
+        <div className="bg-gray-900 p-4 rounded-2xl w-full max-w-md space-y-4 shadow-lg">
+          {/* IBAN */}
+          <div>
+            <label className="block text-sm">IBAN</label>
+            <div className="flex justify-between bg-gray-800 p-2 rounded-xl">
+              <span className="break-all">TR230010300000000014365322</span>
+              <button
+                onClick={() => handleCopy('TR230010300000000014365322')}
+                className="bg-green-600 px-2 py-1 rounded text-white"
+              >Kopyala</button>
             </div>
-            <div>
-              <label className="block text-sm">Adınız ve Soyadınız</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full p-2 rounded-xl bg-gray-700 text-white border border-gray-600"
-              />
+          </div>
+
+          {/* IBAN Adı */}
+          <div>
+            <label className="block text-sm">IBAN Adı</label>
+            <div className="flex justify-between bg-gray-800 p-2 rounded-xl">
+              <span className="break-words">Moka United Ödeme ve Elektronik Para Kuruluşu A.Ş.</span>
+              <button
+                onClick={() => handleCopy('Moka United Ödeme ve Elektronik Para Kuruluşu A.Ş.')}
+                className="bg-green-600 px-2 py-1 rounded text-white"
+              >Kopyala</button>
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <button onClick={handleSubmit} className="w-full bg-green-600 text-white p-2 rounded-xl font-semibold">\u00d6deme Yaptım</button>
           </div>
-        ) : (
-          <div className="text-center space-y-4">
-            <CheckCircle className="w-10 h-10 text-green-500 mx-auto" />
-            <p className="text-green-400 font-semibold">\u00d6deme talebiniz alındı</p>
-            <a
-              href="https://t.me/UsdtToMiningBot"
-              className="inline-block w-full text-center bg-green-600 text-white p-2 rounded-xl"
-            >
-              Bota Geri Dön
-            </a>
+
+          {/* Açıklama */}
+          <div>
+            <label className="block text-sm">Açıklama</label>
+            <div className="flex justify-between bg-gray-800 p-2 rounded-xl">
+              <span>73915374874</span>
+              <button
+                onClick={() => handleCopy('73915374874')}
+                className="bg-green-600 px-2 py-1 rounded text-white"
+              >Kopyala</button>
+            </div>
           </div>
-        )}
+
+          {/* İşlemci Seçenekleri */}
+          <div className="bg-gray-800 p-4 rounded-xl">
+            <p className="font-semibold mb-2">Yatırım Seçenekleri:</p>
+            <ul className="list-disc list-inside space-y-1 text-sm">
+              <li>1 işlemci - 125 TL - Günlük gelir: 28 USDT</li>
+              <li>2 işlemci - 275 TL - Günlük gelir: 50 USDT</li>
+              <li>3 işlemci - 600 TL - Günlük gelir: 90 USDT</li>
+              <li>4 işlemci - 680 TL - Günlük gelir: 140 USDT</li>
+              <li>5 işlemci - 1000 TL - Günlük gelir: 170 USDT</li>
+              <li>6 işlemci - 1300 TL - Günlük gelir: 199 USDT</li>
+            </ul>
+          </div>
+
+          {/* Form */}
+          {!submitted ? (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm">Yatırdığınız Tutar (TL)</label>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="w-full p-2 rounded-xl bg-gray-700 text-white border border-gray-600"
+                />
+              </div>
+              <div>
+                <label className="block text-sm">Adınız Soyadınız</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full p-2 rounded-xl bg-gray-700 text-white border border-gray-600"
+                />
+              </div>
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+              <button onClick={handleSubmit} className="w-full bg-green-600 text-white p-2 rounded-xl">
+                Ödeme Yaptım
+              </button>
+            </div>
+          ) : (
+            <div className="text-center space-y-4">
+              <p className="text-green-400 font-semibold">✅ Ödeme talebiniz alındı</p>
+              <a
+                href="https://t.me/UsdtToMiningBot"
+                className="inline-block w-full bg-green-600 text-white p-2 rounded-xl text-center"
+              >
+                Bota Geri Dön
+              </a>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
