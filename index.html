@@ -1,150 +1,135 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>USDT Mining App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>USDT Mining Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f8f8f8; }
-    .header, .footer { background: #fff; padding: 15px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-    .content { padding: 15px; }
-    .section { background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 15px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
-    .button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
-    .primary { background-color: #00c853; color: white; }
-    .secondary { background-color: #eeeeee; }
-    .store-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .store-item { border: 1px solid #ddd; border-radius: 10px; padding: 10px; background: #fff; text-align: center; cursor: pointer; }
-    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -1px 5px rgba(0,0,0,0.1); }
-    .nav-item { text-align: center; font-size: 14px; color: #555; }
-    #paymentOptions { display: none; margin-top: 10px; }
-    .address-box { background: #f0f0f0; padding: 10px; margin-top: 10px; border-radius: 5px; font-size: 14px; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      color: #222;
+    }
+    .container {
+      padding: 20px;
+    }
+    .section {
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      margin: 0 0 10px 0;
+      font-size: 20px;
+    }
+    button {
+      background: #0088cc;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    .wallet-box {
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
+      font-family: monospace;
+    }
+    .payment-buttons button {
+      background: #eee;
+      color: #000;
+      margin-right: 5px;
+    }
   </style>
 </head>
 <body>
-  <div class="header">
-    <strong>USDT Mining</strong>
-    <div>
-      <span>USDT: <strong id="usdtBalance">0.00</strong></span>
-    </div>
-  </div>
-
-  <div class="content">
+  <div class="container">
     <div class="section">
       <h2>Madencilik</h2>
-      <p>Hashrate: <strong id="hashrate">3 GH/s</strong></p>
-      <p>Toplam Kazanç: <strong id="totalEarned">0.0000 USDT</strong></p>
-      <button class="button primary" onclick="collectReward()">Ödül Al</button>
-      <button class="button secondary" onclick="activateBooster()">Booster</button>
+      <p>Hashrate: <span id="hashrate">3 GH/s</span></p>
+      <p>Bakiye: <span id="balance">0.0000</span> USDT</p>
+      <p>Toplam Kazanç: <span id="total">0.0000</span> USDT</p>
+      <button onclick="claim()">Ödülü Al</button>
+      <button onclick="boost()">Booster Satın Al</button>
     </div>
 
     <div class="section">
-      <h3>Arkadaşlarını Davet Et</h3>
-      <p>Her davet edilen arkadaş için +1000 puan</p>
-      <div class="invite-btns">
-        <a href="https://t.me/UsdtToMiningBot?start=share" target="_blank"><button class="button secondary">Telegram</button></a>
-        <button class="button secondary" onclick="share('WhatsApp')">WhatsApp</button>
-        <button class="button secondary" onclick="share('Messenger')">Messenger</button>
-        <button class="button secondary" onclick="share('Line')">Line</button>
+      <h2>Arkadaşlarınla Paylaş</h2>
+      <button onclick="window.open('https://t.me/UsdtToMiningBot?start=share', '_blank')">Telegram'da Paylaş</button>
+    </div>
+
+    <div class="section">
+      <h2>Mağaza</h2>
+      <div>
+        <p>10.000 puan - 1 TON</p>
+        <button onclick="showPayment('TON')">Satın Al</button>
       </div>
-    </div>
-
-    <div class="section">
-      <h3>Cüzdan</h3>
-      <p>USDT Bakiye: <strong id="walletBalance">0.00</strong> ≈ $<span id="walletUSD">0.00</span></p>
-      <button class="button primary" onclick="withdraw()">Çekim Yap</button>
-    </div>
-
-    <div class="section">
-      <h3>Mağaza</h3>
-      <div class="store-grid">
-        <div class="store-item" onclick="showPaymentOptions('1 TON')">10,000 puan - 1 TON</div>
-        <div class="store-item" onclick="showPaymentOptions('5 TON')">55,000 puan - 5 TON</div>
-        <div class="store-item" onclick="showPaymentOptions('10 TON')">130,000 puan - 10 TON</div>
-        <div class="store-item" onclick="showPaymentOptions('25 TON')">390,000 puan - 25 TON</div>
-        <div class="store-item" onclick="showPaymentOptions('40 TON')">750,000 puan - 40 TON</div>
-        <div class="store-item" onclick="showPaymentOptions('100 TON')">1,600,000 puan - 100 TON</div>
+      <div>
+        <p>55.000 puan - 5 TON</p>
+        <button onclick="showPayment('TON')">Satın Al</button>
       </div>
-      <div id="paymentOptions">
+      <div id="payment-area" style="display:none">
         <h4>Nasıl ödeme yapmak istiyorsun?</h4>
-        <button class="button secondary" onclick="showAddress('TON')">TON</button>
-        <button class="button secondary" onclick="showAddress('TRX')">TRX</button>
-        <button class="button secondary" onclick="showAddress('DOGE')">DOGE</button>
-        <div class="address-box" id="paymentAddress"></div>
-        <button class="button primary" onclick="connectWallet()">Telegram Cüzdanını Bağla</button>
+        <div class="payment-buttons">
+          <button onclick="showAddress('TON')">TON</button>
+          <button onclick="showAddress('TRX')">TRX</button>
+          <button onclick="showAddress('DOGE')">DOGE</button>
+        </div>
+        <div class="wallet-box" id="addressBox"></div>
       </div>
     </div>
-  </div>
-
-  <div class="bottom-nav">
-    <div class="nav-item">Anasayfa</div>
-    <div class="nav-item">Arkadaşlar</div>
-    <div class="nav-item">Cüzdan</div>
   </div>
 
   <script>
-    let hashrate = 3; // GH/s
-    let usdtBalance = 0;
-    let totalEarned = 0;
+    let hashrate = 3;
+    let balance = 0;
+    let total = 0;
 
-    function calculateUsdtPerSecond() {
-      return (11 / 86400) * (hashrate / 3);
-    }
-
-    let usdtPerSecond = calculateUsdtPerSecond();
+    const addresses = {
+      TON: "UQDyN-f4ZUbC0RT_RgW0IcwAxWy48Nbvw05TgWSi4Nhv2aOe",
+      TRX: "TDCJDChfTyXY4qegtE6J9PBbhj6rwT5Qrj",
+      DOGE: "DM1DfvkB46xFy9WmN8Xr8jmAhLL3kb7Kdh"
+    };
 
     function updateUI() {
-      document.getElementById('hashrate').textContent = `${hashrate} GH/s`;
-      document.getElementById('usdtBalance').textContent = usdtBalance.toFixed(4);
-      document.getElementById('totalEarned').textContent = `${totalEarned.toFixed(4)} USDT`;
-      document.getElementById('walletBalance').textContent = usdtBalance.toFixed(2);
-      document.getElementById('walletUSD').textContent = (usdtBalance).toFixed(2);
+      document.getElementById("hashrate").textContent = hashrate + " GH/s";
+      document.getElementById("balance").textContent = balance.toFixed(4);
+      document.getElementById("total").textContent = total.toFixed(4);
     }
 
-    function collectReward() {
-      alert(`Ödül toplandı: ${usdtBalance.toFixed(4)} USDT`);
-      usdtBalance = 0;
+    function claim() {
+      total += balance;
+      balance = 0;
       updateUI();
+      alert("Kazancın cüzdana aktardıldı");
     }
 
-    function activateBooster() {
+    function boost() {
       hashrate += 3;
-      usdtPerSecond = calculateUsdtPerSecond();
-      alert("Booster aktif edildi! Hashrate +3 GH/s. Günlük kazanç +33 USDT.");
-      updateUI();
+      alert("Booster aktif! Hashrate 3 GH/s artırıldı");
     }
 
-    function share(platform) {
-      alert(platform + " üzerinden paylaşım yapıldı!");
-    }
-
-    function withdraw() {
-      alert("Çekim işlemi başlatıldı!");
-    }
-
-    function showPaymentOptions(amount) {
-      document.getElementById('paymentOptions').style.display = 'block';
+    function showPayment(type) {
+      document.getElementById("payment-area").style.display = "block";
     }
 
     function showAddress(type) {
-      const addresses = {
-        "TON": "UQDyN-f4ZUbC0RT_RgW0IcwAxWy48Nbvw05TgWSi4Nhv2aOe",
-        "TRX": "TDCJDChfTyXY4qegtE6J9PBbhj6rwT5Qrj",
-        "DOGE": "DM1DfvkB46xFy9WmN8Xr8jmAhLL3kb7Kdh"
-      };
-      document.getElementById('paymentAddress').textContent = `Adres: ${addresses[type]}`;
-    }
-
-    function connectWallet() {
-      alert("Lütfen ödeme ekranından cüzdanınızı bağlayarak işlemi tamamlayın.");
-      window.open("https://t.me/UsdtToMiningBot", "_blank");
+      document.getElementById("addressBox").textContent = "Adres: " + addresses[type];
     }
 
     setInterval(() => {
-      usdtBalance += usdtPerSecond;
-      totalEarned += usdtPerSecond;
+      balance += (11 / 86400) * (hashrate / 3);
       updateUI();
     }, 1000);
 
+    Telegram.WebApp.ready();
     updateUI();
   </script>
 </body>
