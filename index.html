@@ -1,0 +1,86 @@
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { RocketIcon, WalletIcon, UsersIcon } from "lucide-react";
+
+export default function USDTMiningApp() {
+  const [usdtBalance, setUsdtBalance] = useState(825.43);
+  const [hashrate, setHashrate] = useState(3);
+  const [minedUsdt, setMinedUsdt] = useState(0.790430501);
+  const [wallet, setWallet] = useState({ usdt: 826.33, rhc: 300 });
+
+  const handleClaimReward = () => {
+    setWallet(prev => ({ ...prev, usdt: prev.usdt + minedUsdt }));
+    setMinedUsdt(0);
+  };
+
+  const handleBooster = () => {
+    setHashrate(prev => prev + 1);
+  };
+
+  const handleWithdraw = () => {
+    alert("Çekim işlemi başlatıldı!");
+  };
+
+  return (
+    <div className="p-4 max-w-md mx-auto">
+      <h1 className="text-2xl font-bold mb-4 text-center">USDT Mining</h1>
+      <Tabs defaultValue="home">
+        <TabsList className="grid grid-cols-3 mb-4">
+          <TabsTrigger value="home">
+            <RocketIcon className="h-4 w-4 mr-1" /> Anasayfa
+          </TabsTrigger>
+          <TabsTrigger value="friends">
+            <UsersIcon className="h-4 w-4 mr-1" /> Arkadaşlar
+          </TabsTrigger>
+          <TabsTrigger value="wallet">
+            <WalletIcon className="h-4 w-4 mr-1" /> Cüzdan
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="home">
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-lg">Hashrate: {hashrate} GH/s ⚡</div>
+              <div className="text-2xl font-bold my-2">{minedUsdt.toFixed(9)} USDT</div>
+              <Button onClick={handleClaimReward} className="mr-2">Ödül Al</Button>
+              <Button variant="outline" onClick={handleBooster}>Booster</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="friends">
+          <Card>
+            <CardContent className="p-4">
+              <p>Arkadaşlarını davet et</p>
+              <p>Her davet edilen arkadaş için +1000 USDT</p>
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                <Button variant="outline">Telegram</Button>
+                <Button variant="outline">WhatsApp</Button>
+                <Button variant="outline">Link Kopyala</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="wallet">
+          <Card>
+            <CardContent className="p-4">
+              <div className="mb-2">Cüzdan Bakiyesi</div>
+              <div className="text-sm mb-2">USDT: {wallet.usdt} ≈ ${(wallet.usdt * 0.1884).toFixed(2)}</div>
+              <div className="text-sm mb-4">Bonus: {wallet.rhc} USDT</div>
+              <Button onClick={handleWithdraw}>Çekim Yap</Button>
+              <div className="mt-4">
+                <label className="block text-sm mb-1">Cüzdan Adresi Ayarla</label>
+                <Input placeholder="USDT Cüzdan Adresi" />
+              </div>
+              <div className="mt-4 text-sm text-gray-500">Çekim Kaydı: Kayıt yok</div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
